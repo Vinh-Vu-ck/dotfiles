@@ -1,0 +1,44 @@
+#!/bin/bash
+
+# This version of srm uses the $TRASH environmental variable
+# as user-defined location for the trash folder. This allows
+# the user to have total control over their trash location at
+# the cost of human-error. For example, the user may decide to
+# define the $TRASH environment variable to be an unsafe location
+# where it is possible the user may remove that folder without
+# remembering his/her trash folder was in there. Also the
+# trash folder is universal, allowing all files to be trashed
+# at a single location, meaning that accidentally permanently
+# deleting the files will delete files from all points of
+# origin. This can be avoided with the current directory
+# implementation where trashed files are stored in their
+# original directory. Thus, the tradeoff for global versus
+# current directory implementation of the trash is simplicity
+# versus reliability.
+
+# 'srm'ing on an already 'srm'ed file will NOT delete it. This
+# is counterintuitive and no case should 'srm' completely remove
+# a file (in my opinion). Removing a file permanently should be
+# done using the standard 'rm' command or 'trash'.
+
+# Checks $TRASH for the user-defined trash folder. If
+# it does not exist, the user will be asked to create it.
+if [ -z $TRASH ]; then
+    echo "srm: Your trash folder does not exist" >&2
+    echo "srm: Please set the \$TRASH environmental variable to a valid directory" >&2
+    exit 1
+else
+    if [ ! -d $TRASH ]; then
+        echo "srm: Your \$TRASH variable is set to a invalid directory" >&2
+        echo "srm: Please set \$TRASH to a valid directory" >&2
+        exit 1
+    fi
+fi
+
+for param in "$@"; do
+    if [ ! -e "$param" ]; then
+        echo "srm: The file '$param' does not exist" >&2
+    else
+        mv -i "$param" $TRASH
+    fi
+done

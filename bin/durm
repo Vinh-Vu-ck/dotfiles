@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# Checks $TRASH for the user-defined trash folder. If
+# it does not exist, the user will be asked to create it.
+if [ -z $TRASH ]; then
+    echo "durm: Your trash folder does not exist" >&2
+    echo "durm: Please set the \$TRASH environmental variable to a valid directory" >&2
+    exit 1
+else
+    if [ ! -d $TRASH ]; then
+        echo "durm: Your \$TRASH variable is set to a invalid directory" >&2
+        echo "durm: Please set \$TRASH to a valid directory" >&2
+        exit 1
+    fi
+fi
+
+du $TRASH
